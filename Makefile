@@ -9,29 +9,23 @@
 #Busca dentro do diretorio atribuido na variavel "SRC" todos os arquivos .cpp
 #Muda o sufixo e prefixo de todos os arquivos: "src/*.cpp" para "obj/*.o"
 #Compila os arquivos .cpp e cria os arquivos .o no diretorio atribuido na variavel "OBJ"
-#Linka e cria o executavel com o nome que você colocou em "coloqueAquiOnomeDoSeuExecutavel",
-#buscando primeiro o arquivo principal .cpp no diretorio atribuido na variavel "PROGRAM"
-#e buscando as devidas dependecias, bibliotecas e arquivos-objetos que foram criados
+#Linka e cria o executavel com o nome que você colocou na variavel "NOME_EXECUTAVEL",
+#buscando as bibliotecas e os arquivos-objetos que foram criados
 #O que acontece quando digito "make run"?
-#Executa o programa "coloqueAquiOnomeDoSeuExecutavel",
+#Executa o programa "NOME_EXECUTAVEL",
 #O que acontece quando digito "make cleanObjetos"?
 #Exclui todos os arquivos .o no diretorio atribuido na variavel "OBJ"
 #O que acontece quando digito "make clean"?
 #Exclui todos os arquivos no diretorio atribuido na variavel "BIN" que seria seu
-#executavel que deu o nome em "coloqueAquiOnomeDoSeuExecutavel"
+#executavel que deu o nome em "NOME_EXECUTAVEL"
 #O que acontece quando digito "make tar"?
 #Empacota todo o diretorio atual onde esta o arquivo makefile com o
-#nome que voce substituir em "nomeDeSeuProjeto"
-#Notas:
-#Lembrem-se ao nomear o executavel em "coloqueAquiOnomeDoSeuExecutavel",
-#precisa existir um arquivo .cpp com o mesmo nome no diretorio atribuido 
-#na variavel "PROGRAM", para sastisfazer a dependencia do alvo,
-#esse arquivo, seria seu arquivo com a funcao "int main()". 
+#nome que você colocou na variavel "NOME_EXECUTAVEL"
 
 #Compilador
 COMPILADOR=g++
-#Diretorio dos arquivos de programa
-PROGRAM=./program
+#Nome do seu executavel
+NOME_EXECUTAVEL=nomeDoSeuExecutavel
 #Diretorio dos arquivos binarios
 BIN=./bin
 #Diretorio dos arquivos .h e .hpp
@@ -58,36 +52,32 @@ OBJETOS=$(addprefix $(OBJ)/, $(addsuffix .o, $(OBJLIMPAR)))
 
 .PHONY: all cleanObjetos clean tar
 
-all: compilar executaveis
+all: compilar $(NOME_EXECUTAVEL)
 
 #Arquivos .o do projeto
 compilar: $(OBJETOS)
-
-#Executaveis do projeto
-executaveis: $(BIN)/coloqueAquiOnomeDoSeuExecutavel
-	echo $(OBJETOS)
 
 #Compilar e criar os arquivos-objetos
 $(OBJ)/%.o: $(SRC)/%.cpp $(INCLUDE)/%.hpp
 	$(COMPILADOR) $(FLAGS) -c $< -I $(INCLUDE) -o $@
 
 #Linkar e criar o executavel
-$(BIN)/%: $(PROGRAM)/%.cpp
-	$(COMPILADOR) $(FLAGS) $< $(OBJETOS) -I $(INCLUDE) $(LIBS) -o $@
+$(NOME_EXECUTAVEL): $(OBJETOS)
+	$(COMPILADOR) $(FLAGS) $(OBJETOS) $(LIBS) -o $(BIN)/$@
 
 #Executar programa
 run:
-	$(BIN)/coloqueAquiOnomeDoSeuExecutavel
+	$(BIN)/$(NOME_EXECUTAVEL)
 
 #Limpar arquivos .o
 cleanObjetos:
 	rm -f $(OBJ)/*.o
 
-#Limpar executaveis
+#Limpar executavel
 clean:
-	rm -f $(BIN)/%
+	rm -f $(BIN)/$(NOME_EXECUTAVEL)
 
 #Empacotar projeto
 tar:
-	tar cvjf nomeDeSeuProjeto.tar.bz2 pwd
+	tar cvjf $(NOME_EXECUTAVEL).tar.bz2 pwd
 
